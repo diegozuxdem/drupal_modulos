@@ -1,0 +1,249 @@
+<?php
+
+function client_forms_help($path)
+{
+    switch ($path) {
+        case "admin/help#client_forms":
+            return '<p>' . t("Forms to input login data") . '</p>';
+            break;
+    }
+}
+
+function client_forms_menu()
+{
+    $items['client_forms/loginuser'] = array(
+        'title' => 'Formulario Login',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('loginForm_form'),
+        'file' => 'client_forms.api.php',
+        'access callback' => TRUE
+    );
+
+    $items['client_forms/register'] = array(
+        'title' => 'Formulario Registro',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('registerForm_form'),
+        'file' => 'client_forms.api.php',
+        'access callback' => TRUE
+    );
+
+    $items['client_forms/form-example'] = array(
+        'title' => 'Example Form',
+        'description' => 'A form to mess around with.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('form_example_form'),
+        'access callback' => TRUE
+    );
+
+    return $items;
+}
+
+function loginForm_form($form, &$form_state) {
+
+    $user='apptividades-rtvc-APP';
+    $token='055daffdc4c75cdeb6f56b720955b20a';
+    $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
+
+    $clientForm = new clientForms();
+
+    $clientConnect = $clientForm->connect($user,$token,$urlConnect);
+    $connectResult = drupal_json_decode($clientConnect)['result'];
+
+    $connectResultCode = $connectResult['code'];
+
+    if ($connectResultCode == 100){
+
+
+        $form['email'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Correo Electronico',
+            '#size' => 30,
+            '#maxlength' => 30,
+            '#required' => TRUE,
+        );
+        $form['password'] = array(
+            '#type' => 'password',
+            '#title' => 'Contraseña',
+            '#size' => 50,
+            '#maxlength' => 50,
+            '#required' => TRUE,
+        );
+
+        $form['submit_button'] = array(
+            '#type' => 'submit',
+            '#value' => t('Enviar'),
+        );
+
+    } else {
+
+        echo("Falló la conexión al API");
+        print_r($clientConnect);
+    }
+
+    return $form;
+
+}
+
+function loginForm_form_submit($form, &$form_state) {
+    $email = $form_state['values']['email'];
+    $password = $form_state['values']['password'];
+
+    $user='apptividades-rtvc-APP';
+    $token='055daffdc4c75cdeb6f56b720955b20a';
+    $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
+    $urlLogin = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/login";
+
+    $clientForm = new clientForms();
+
+    $clientConnect = $clientForm->connect($user,$token,$urlConnect);
+    $connectData = drupal_json_decode($clientConnect)['data'];
+    $sessionToken = $connectData['session_token'];
+
+    $clientLogin = $clientForm->login($email,$password,$user,$token,$sessionToken,$urlLogin);
+
+    $loginData = drupal_json_decode($clientLogin)['data'];
+
+    if(isset($loginData['result'])){
+        $loginDataResultCode = $loginData['result']['code'];
+    } else {
+        $loginDataResultCode = drupal_json_decode($clientLogin)['result']['code'];;
+    }
+
+    if($loginDataResultCode == 250){
+        drupal_goto('/client_forms/register');
+
+    } else {
+        echo "Usuario Logeado";
+        var_dump($loginData);
+        //die('-------');
+    }
+
+     /*
+     $headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+     $data = http_build_query($form_state['values'], '', '&');
+     $response = drupal_http_request($urlLogin, array($headers, 'POST', $data));
+     */
+
+}
+
+function registerForm_form($form, &$form_state) {
+
+    $user='apptividades-rtvc-APP';
+    $token='055daffdc4c75cdeb6f56b720955b20a';
+    $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
+
+    $clientForm = new clientForms();
+
+    $clientConnect = $clientForm->connect($user,$token,$urlConnect);
+    $connectResult = drupal_json_decode($clientConnect)['result'];
+
+    $connectResultCode = $connectResult['code'];
+
+    if ($connectResultCode == 100){
+
+
+        $form['mail'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Correo Electronico',
+            '#size' => 30,
+            '#maxlength' => 30,
+            '#required' => TRUE,
+        );
+        $form['username'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Nombre de Usuario',
+            '#size' => 30,
+            '#maxlength' => 30,
+            '#required' => TRUE,
+        );
+        $form['passwd'] = array(
+            '#type' => 'password',
+            '#title' => 'Contraseña',
+            '#size' => 50,
+            '#maxlength' => 50,
+            '#required' => TRUE,
+        );
+        $form['name'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Nombre',
+            '#size' => 50,
+            '#maxlength' => 50,
+            '#required' => TRUE,
+        );
+        $form['lastname'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Apellido',
+            '#size' => 50,
+            '#maxlength' => 50,
+            '#required' => TRUE,
+        );
+        $form['otro_campo'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Información adicional',
+            '#size' => 50,
+            '#maxlength' => 50,
+            '#required' => FALSE,
+        );
+
+        $form['submit_button'] = array(
+            '#type' => 'submit',
+            '#value' => t('Enviar'),
+        );
+
+    } else {
+
+        echo("Falló la conexión al API");
+        print_r($clientConnect);
+    }
+
+    return $form;
+
+}
+
+function registerForm_form_submit($form, &$form_state) {
+    $mail = $form_state['values']['mail'];
+    $username = $form_state['values']['username'];
+    $passwd = $form_state['values']['passwd'];
+    $name = $form_state['values']['name'];
+    $lastname = $form_state['values']['lastname'];
+    $otro_campo = $form_state['values']['otro_campo'];
+
+    $user='apptividades-rtvc-APP';
+    $token='055daffdc4c75cdeb6f56b720955b20a';
+    $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
+    $urlRegister = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setregisteruser";
+
+    $clientForm = new clientForms();
+
+    $clientConnect = $clientForm->connect($user,$token,$urlConnect);
+    $connectData = drupal_json_decode($clientConnect)['data'];
+    $sessionToken = $connectData['session_token'];
+
+    $clientRegister = $clientForm->register($mail,$username,$passwd,$name,$lastname,$otro_campo,$user,$token,$sessionToken,$urlRegister);
+    //$registerResult = drupal_json_decode($clientRegister)['result'];
+
+    print_r($clientRegister);
+
+}
+
+function form_example_form($form, &$form_state) {
+
+    $form['price'] = array(
+        '#type' => 'textfield',
+        '#title' => 'What is Your Price?',
+        '#size' => 10,
+        '#maxlength' => 10,
+        '#required' => TRUE, //make this field required
+    );
+
+    $form['submit_button'] = array(
+        '#type' => 'submit',
+        '#value' => t('Click Here!'),
+    );
+
+  return $form;
+}
+
+function form_example_form_submit($form, &$form_state) {
+
+}

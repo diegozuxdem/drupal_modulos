@@ -1,0 +1,4 @@
+name = Client forms
+description = Form for users input data
+version = 1
+core = 7.x
