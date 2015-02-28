@@ -1,0 +1,228 @@
+<?php
+
+function client_api_help($path)
+{
+    switch ($path) {
+        case "admin/help#client_api":
+            return '<p>' . t("Help for API") . '</p>';
+            break;
+    }
+}
+
+function client_api_menu()
+{
+    $items['client_api/connect'] = array(
+        'title' => 'connect',
+        'page callback' => 'connect',
+        'access arguments' => array('access content')
+    );
+    $items['client_api/login'] = array(
+        'title' => 'login',
+        'page callback' => 'login',
+        'access arguments' => array('access content')
+    );
+    $items['client_api/logout'] = array(
+        'title' => 'logout',
+        'page callback' => 'logout',
+        'access arguments' => array('access content')
+    );
+    $items['client_api/getform'] = array(
+        'title' => 'getform',
+        'page callback' => 'getform',
+        'access arguments' => array('access content')
+    );
+    $items['client_api/setregisteruser'] = array(
+        'title' => 'setregisteruser',
+        'page callback' => 'setregisteruser',
+        'access arguments' => array('access content')
+    );
+    $items['client_api/setactivity'] = array(
+        'title' => 'setactivity',
+        'page callback' => 'setactivity',
+        'access arguments' => array('access content')
+    );
+
+
+    return $items;
+}
+
+function connect() {
+
+    $urlCreate = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
+    $data = array(
+        'usr' => 'apptividades-rtvc-APP',
+        'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+    );
+
+    /*$options = array(
+        'headers' => $auth_headers,
+        'method' => 'POST',
+        'data' => drupal_http_build_query($data),
+        'timeout' => 15,
+    );*/
+
+    $data = drupal_http_build_query($data);
+
+    $ch = curl_init( $urlCreate );
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+    //$response = drupal_http_request($service, $options); // Usando una máquina virtual tengo problemas con este operador
+    return $response;
+
+}
+
+function login() {
+        $service = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/login";
+        $data_login["mail"]='hgr0221@gmail.com';
+        $data_login["passwd"]='micontraseña';
+        $data_login = drupal_json_encode($data_login);
+
+        $data = array(
+            'usr' => 'apptividades-rtvc-APP',
+            'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+            'session_token' =>'f25b3c50c682c2c5bb6d5b29d648c90a',
+            'data' => $data_login,
+        );
+
+        $data = drupal_http_build_query($data);
+
+        $ch = curl_init( $service );
+        curl_setopt( $ch, CURLOPT_POST, 1);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt( $ch, CURLOPT_HEADER, 0);
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+        $response = curl_exec( $ch );
+        return $response;
+
+}
+
+function logout() {
+
+    $service = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/logout";
+    $auth_headers = array(
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    );
+
+    $data = array(
+        'usr' => 'apptividades-rtvc-APP',
+        'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+        'session_token' =>'f25b3c50c682c2c5bb6d5b29d648c90a',
+    );
+
+    $data = drupal_http_build_query($data);
+
+    $ch = curl_init( $service );
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+
+    //$response = drupal_http_request($service, $auth_headers, 'POST', $data);
+
+    return $response;
+
+
+}
+
+function getform() {
+
+    $service = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/getform";
+
+    $data = array(
+        'usr' => 'apptividades-rtvc-APP',
+        'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+        'session_token' => 'f25b3c50c682c2c5bb6d5b29d648c90a',
+    );
+
+    $data = drupal_http_build_query($data);
+
+    $ch = curl_init( $service );
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+
+    return $response;
+
+}
+
+
+function setregisteruser() {
+
+    $service = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setregisteruser";
+
+    $data_user["mail"]='hgr0221@gmail.com';
+    $data_user["username"]='HaroldGR';
+    $data_user["passwd"]='micontraseña';
+    $data_user["name"]='Harold';
+    $data_user["lastname"]='Giraldo Restrepo';
+    $data_user["otro_campo"]='Otro Valor';
+    $data_user = drupal_json_encode($data_user);
+
+
+    $data = array(
+        'usr' => 'apptividades-rtvc-APP',
+        'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+        'session_token' => 'f25b3c50c682c2c5bb6d5b29d648c90a',
+        'data' => $data_user,
+    );
+
+    $data = drupal_http_build_query($data);
+
+    $ch = curl_init( $service );
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+
+    return $response;
+
+
+}
+
+function setactivity() {
+
+    $service = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setactivity";
+
+    $data_activity["mail"]='hgr0221@gmail.com';
+    $data_activity["type"]='Logueo por Facebook';
+    $data_activity = drupal_json_encode($data_activity);
+
+    $data = array(
+        'usr' => 'apptividades-rtvc-APP',
+        'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
+        'session_token' => 'f25b3c50c682c2c5bb6d5b29d648c90a',
+        'data' => $data_activity,
+    );
+
+    $data = drupal_http_build_query($data);
+
+    $ch = curl_init( $service );
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+
+    return $response;
+
+
+}
