@@ -54,25 +54,21 @@ function connect() {
         'tkn' => '055daffdc4c75cdeb6f56b720955b20a',
     );
 
-    /*$options = array(
+    $auth_headers = array(
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    );
+
+    $options = array(
         'headers' => $auth_headers,
         'method' => 'POST',
         'data' => drupal_http_build_query($data),
         'timeout' => 15,
-    );*/
+    );
 
-    $data = drupal_http_build_query($data);
+    $response = drupal_http_request($urlCreate, $options);
+    $result = $response->data;
+    return $result;
 
-    $ch = curl_init( $urlCreate );
-    curl_setopt( $ch, CURLOPT_POST, 1);
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt( $ch, CURLOPT_HEADER, 0);
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
-
-    $response = curl_exec( $ch );
-    //$response = drupal_http_request($service, $options); // Usando una máquina virtual tengo problemas con este operador
-    return $response;
 
 }
 
@@ -89,17 +85,20 @@ function login() {
             'data' => $data_login,
         );
 
-        $data = drupal_http_build_query($data);
+        $auth_headers = array(
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        );
 
-        $ch = curl_init( $service );
-        curl_setopt( $ch, CURLOPT_POST, 1);
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt( $ch, CURLOPT_HEADER, 0);
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+        $options = array(
+            'headers' => $auth_headers,
+            'method' => 'POST',
+            'data' => drupal_http_build_query($data),
+            'timeout' => 25,
+        );
 
-        $response = curl_exec( $ch );
-        return $response;
+        $response = drupal_http_request($service, $options);
+        $result = $response->data;
+        return $result;
 
 }
 
@@ -116,20 +115,16 @@ function logout() {
         'session_token' =>'f25b3c50c682c2c5bb6d5b29d648c90a',
     );
 
-    $data = drupal_http_build_query($data);
+    $options = array(
+        'headers' => $auth_headers,
+        'method' => 'POST',
+        'data' => drupal_http_build_query($data),
+        'timeout' => 25,
+    );
 
-    $ch = curl_init( $service );
-    curl_setopt( $ch, CURLOPT_POST, 1);
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt( $ch, CURLOPT_HEADER, 0);
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
-
-    $response = curl_exec( $ch );
-
-    //$response = drupal_http_request($service, $auth_headers, 'POST', $data);
-
-    return $response;
+    $response = drupal_http_request($service, $options);
+    $result = $response->data;
+    return $result;
 
 
 }
@@ -144,18 +139,20 @@ function getform() {
         'session_token' => 'f25b3c50c682c2c5bb6d5b29d648c90a',
     );
 
-    $data = drupal_http_build_query($data);
+    $auth_headers = array(
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    );
 
-    $ch = curl_init( $service );
-    curl_setopt( $ch, CURLOPT_POST, 1);
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt( $ch, CURLOPT_HEADER, 0);
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+    $options = array(
+        'headers' => $auth_headers,
+        'method' => 'POST',
+        'data' => drupal_http_build_query($data),
+        'timeout' => 25,
+    );
 
-    $response = curl_exec( $ch );
-
-    return $response;
+    $response = drupal_http_request($service, $options);
+    $result = $response->data;
+    return $result;
 
 }
 
@@ -180,18 +177,20 @@ function setregisteruser() {
         'data' => $data_user,
     );
 
-    $data = drupal_http_build_query($data);
+    $auth_headers = array(
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    );
 
-    $ch = curl_init( $service );
-    curl_setopt( $ch, CURLOPT_POST, 1);
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt( $ch, CURLOPT_HEADER, 0);
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+    $options = array(
+        'headers' => $auth_headers,
+        'method' => 'POST',
+        'data' => drupal_http_build_query($data),
+        'timeout' => 25,
+    );
 
-    $response = curl_exec( $ch );
-
-    return $response;
+    $response = drupal_http_request($service, $options);
+    $result = $response->data;
+    return $result;
 
 
 }
@@ -211,18 +210,20 @@ function setactivity() {
         'data' => $data_activity,
     );
 
-    $data = drupal_http_build_query($data);
+    $auth_headers = array(
+        'Content-Type' => 'application/x-www-form-urlencoded'
+    );
 
-    $ch = curl_init( $service );
-    curl_setopt( $ch, CURLOPT_POST, 1);
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt( $ch, CURLOPT_HEADER, 0);
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+    $options = array(
+        'headers' => $auth_headers,
+        'method' => 'POST',
+        'data' => drupal_http_build_query($data),
+        'timeout' => 25,
+    );
 
-    $response = curl_exec( $ch );
-
-    return $response;
+    $response = drupal_http_request($service, $options);
+    $result = $response->data;
+    return $result;
 
 
 }

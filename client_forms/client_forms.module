@@ -11,6 +11,10 @@ function client_forms_help($path)
 
 function client_forms_menu()
 {
+    /**
+     ***  hook_menu(). ***
+     **/
+
     $items['client_forms/loginuser'] = array(
         'title' => 'Formulario Login',
         'page callback' => 'drupal_get_form',
@@ -27,23 +31,19 @@ function client_forms_menu()
         'access callback' => TRUE
     );
 
-    $items['client_forms/form-example'] = array(
-        'title' => 'Example Form',
-        'description' => 'A form to mess around with.',
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('form_example_form'),
-        'access callback' => TRUE
-    );
-
     return $items;
 }
 
 function loginForm_form($form, &$form_state) {
 
+    // *** Se usan los accesos al API constantes ***
+
     $user='apptividades-rtvc-APP';
     $token='055daffdc4c75cdeb6f56b720955b20a';
     $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
 
+    // *** Se usan los accesos al API constantes ***
+    // *** Se crea una una instancia de la clase clientForms() para acceder a los servicios del API con Métodos ***
     $clientForm = new clientForms();
 
     $clientConnect = $clientForm->connect($user,$token,$urlConnect);
@@ -51,6 +51,7 @@ function loginForm_form($form, &$form_state) {
 
     $connectResultCode = $connectResult['code'];
 
+    // *** Se valida conexión con el API con el Result Code ***
     if ($connectResultCode == 100){
 
 
@@ -84,21 +85,32 @@ function loginForm_form($form, &$form_state) {
 
 }
 
+/**
+  ** Se valida el form submit del formulario de Login usando el servicio login del API a través del método login de la instancia clientForms() **
+**/
 function loginForm_form_submit($form, &$form_state) {
+
+    // *** Se capturan las variables del formulario ***
     $email = $form_state['values']['email'];
     $password = $form_state['values']['password'];
 
+    // *** Se usan los accesos al API constantes ***
     $user='apptividades-rtvc-APP';
     $token='055daffdc4c75cdeb6f56b720955b20a';
     $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
     $urlLogin = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/login";
 
+    // *** Se crea una una instancia de la clase clientForms() para acceder a los servicios del API con Métodos ***
     $clientForm = new clientForms();
 
+    // *** Se consume el servicio connect con el método connect de clientForms()  ***
     $clientConnect = $clientForm->connect($user,$token,$urlConnect);
+
+    // ** Captura el session_token de la respuesta del servicio connect
     $connectData = drupal_json_decode($clientConnect)['data'];
     $sessionToken = $connectData['session_token'];
 
+    // *** Se consume el servicio login con el método connect de clientForms()  ***
     $clientLogin = $clientForm->login($email,$password,$user,$token,$sessionToken,$urlLogin);
 
     $loginData = drupal_json_decode($clientLogin)['data'];
@@ -109,23 +121,17 @@ function loginForm_form_submit($form, &$form_state) {
         $loginDataResultCode = drupal_json_decode($clientLogin)['result']['code'];;
     }
 
+    // ** Se valida el Result code del servicio login
     if($loginDataResultCode == 250){
-        drupal_goto('/client_forms/register');
+        drupal_goto('client_forms/register');
 
     } else {
-        echo "Usuario Logeado";
-        var_dump($loginData);
-        //die('-------');
+        drupal_set_message($clientLogin);
     }
-
-     /*
-     $headers = array('Content-Type' => 'application/x-www-form-urlencoded');
-     $data = http_build_query($form_state['values'], '', '&');
-     $response = drupal_http_request($urlLogin, array($headers, 'POST', $data));
-     */
 
 }
 
+// ** Formulario de Registro **
 function registerForm_form($form, &$form_state) {
 
     $user='apptividades-rtvc-APP';
@@ -193,14 +199,20 @@ function registerForm_form($form, &$form_state) {
     } else {
 
         echo("Falló la conexión al API");
-        print_r($clientConnect);
+        drupal_set_message($clientConnect);
     }
 
     return $form;
 
 }
 
+/**
+ * Se valida el form submit del formulario de Login usando el servicio setregisteruser del API *
+**/
+
 function registerForm_form_submit($form, &$form_state) {
+
+    // *** Se capturan los datos del formulario para enviar como parámetros al servicio setregisteruser ***
     $mail = $form_state['values']['mail'];
     $username = $form_state['values']['username'];
     $passwd = $form_state['values']['passwd'];
@@ -208,10 +220,15 @@ function registerForm_form_submit($form, &$form_state) {
     $lastname = $form_state['values']['lastname'];
     $otro_campo = $form_state['values']['otro_campo'];
 
+    // *** Se usan los accesos al API constantes ***
     $user='apptividades-rtvc-APP';
     $token='055daffdc4c75cdeb6f56b720955b20a';
     $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
     $urlRegister = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setregisteruser";
+    $urlSetActivity = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setactivity";
+
+    // Se define el tipo de actividad como constante.
+    $type="Logeo por Facebook";
 
     $clientForm = new clientForms();
 
@@ -220,30 +237,13 @@ function registerForm_form_submit($form, &$form_state) {
     $sessionToken = $connectData['session_token'];
 
     $clientRegister = $clientForm->register($mail,$username,$passwd,$name,$lastname,$otro_campo,$user,$token,$sessionToken,$urlRegister);
-    //$registerResult = drupal_json_decode($clientRegister)['result'];
+    drupal_set_message("RESPUESTA DEL REGISTRO");
+    drupal_set_message($clientRegister);
 
-    print_r($clientRegister);
-
-}
-
-function form_example_form($form, &$form_state) {
-
-    $form['price'] = array(
-        '#type' => 'textfield',
-        '#title' => 'What is Your Price?',
-        '#size' => 10,
-        '#maxlength' => 10,
-        '#required' => TRUE, //make this field required
-    );
-
-    $form['submit_button'] = array(
-        '#type' => 'submit',
-        '#value' => t('Click Here!'),
-    );
-
-  return $form;
-}
-
-function form_example_form_submit($form, &$form_state) {
+    // Setear actividad usando el método setactivity del API a través del método setActivity de la instancia clientForms()
+    $ClientSetActivity = $clientForm->setActivity($user,$token,$sessionToken,$mail,$type,$urlSetActivity);
+    // Definir que output se debe mostrar o que acción tomar, por ahora solo se muestra el mismo formulario después del submit
+    drupal_set_message("RESPUESTA DEL SET ACTIVITY");
+    drupal_set_message($ClientSetActivity);
 
 }
