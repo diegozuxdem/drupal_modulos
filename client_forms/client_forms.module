@@ -226,6 +226,7 @@ function registerForm_form_submit($form, &$form_state) {
     $urlConnect = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/connect";
     $urlRegister = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setregisteruser";
     $urlSetActivity = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/setactivity";
+    $urlGetForm = "http://ec2-52-1-116-91.compute-1.amazonaws.com/api-rtvc/getform";
 
     // Se define el tipo de actividad como constante.
     $type="Logeo por Facebook";
@@ -245,5 +246,10 @@ function registerForm_form_submit($form, &$form_state) {
     // Definir que output se debe mostrar o que acción tomar, por ahora solo se muestra el mismo formulario después del submit
     drupal_set_message("RESPUESTA DEL SET ACTIVITY");
     drupal_set_message($ClientSetActivity);
+
+    // Get Form Response
+    $clientGetForm = $clientForm->getform($user,$token,$sessionToken,$urlGetForm);
+    drupal_set_message("RESPUESTA DE GETFORM");
+    drupal_set_message($clientGetForm);
 
 }

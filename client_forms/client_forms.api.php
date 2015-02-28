@@ -129,4 +129,30 @@ class clientForms {
 
 
     }
+
+    function getform($usr,$tkn,$session_token,$service) {
+
+        $data = array(
+            'usr' => $usr,
+            'tkn' => $tkn,
+            'session_token' => $session_token,
+        );
+
+        $auth_headers = array(
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        );
+
+        $options = array(
+            'headers' => $auth_headers,
+            'method' => 'POST',
+            'data' => drupal_http_build_query($data),
+            'timeout' => 25,
+        );
+
+        $response = drupal_http_request($service, $options);
+        $result = $response->data;
+        return $result;
+
+
+    }
 }
